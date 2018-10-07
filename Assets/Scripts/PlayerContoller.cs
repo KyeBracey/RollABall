@@ -11,20 +11,31 @@ public class PlayerContoller : MonoBehaviour {
 
 	private Rigidbody rb;
 	private int count;
+	private Vector3 jump;
+	private bool isGrounded;
 
 	// Start is called once, on the very first frame that the script is active
 	void Start () {
 		rb = GetComponent<Rigidbody>();
 		count = 0;
 		SetCountText();
-		winText.text = "";
+		winText.text = "<WASD>\nor\n<arrow keys>\nto move";
+
+		jump = new Vector3(0.0f, 5.0f, 0.0f);
 	}
 
 	// Update is called before rendering each frame
 	// Most game code will go here
-	// void Update () {
-	//
-	// }
+	void Update () {
+		if (
+			Input.GetKeyDown("space") &&
+			isGrounded &&
+			count >= 8
+		) {
+			rb.AddForce(jump, ForceMode.Impulse);
+			isGrounded = false;
+		}
+	}
 
 	// FixedUpdate is called just before performing any physics calculations
 	// Physics code will go here
@@ -45,11 +56,17 @@ public class PlayerContoller : MonoBehaviour {
 		}
 	}
 
+	void OnCollisionStay() {
+		if (rb.velocity.y == 0) {
+			isGrounded = true;
+		}
+	}
+
 	void SetCountText() {
 		countText.text = "Score: " + count .ToString();
 
 		if (count >= 8) {
-			winText.text = "Winner is you!";
+			winText.text = "<WASD>\nor\n<arrow keys>\nto move\n\n<space> to jump";
 		}
 	}
 
