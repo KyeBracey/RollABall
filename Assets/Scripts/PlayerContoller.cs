@@ -8,11 +8,13 @@ public class PlayerContoller : MonoBehaviour {
 	public float speed;
 	public Text countText;
 	public Text winText;
+	public Text abilityUnlockText;
 
 	private Rigidbody rb;
 	private int count;
 	private Vector3 jump;
 	private bool isGrounded;
+	private bool isJumpUnlocked;
 
 	// Start is called once, on the very first frame that the script is active
 	void Start () {
@@ -21,6 +23,7 @@ public class PlayerContoller : MonoBehaviour {
 		SetCountText();
 		winText.text = "<WASD>\nor\n<arrow keys>\nto move";
 
+		isJumpUnlocked = false;
 		jump = new Vector3(0.0f, 5.0f, 0.0f);
 	}
 
@@ -29,8 +32,8 @@ public class PlayerContoller : MonoBehaviour {
 	void Update () {
 		if (
 			Input.GetKeyDown("space") &&
-			isGrounded &&
-			count >= 8
+			isJumpUnlocked &&
+			isGrounded
 		) {
 			rb.AddForce(jump, ForceMode.Impulse);
 			isGrounded = false;
@@ -53,6 +56,7 @@ public class PlayerContoller : MonoBehaviour {
 			other.gameObject.SetActive(false);
 			count = count + 1;
 			SetCountText();
+			UnlockAbility();
 		}
 	}
 
@@ -67,6 +71,23 @@ public class PlayerContoller : MonoBehaviour {
 
 		if (count >= 8) {
 			winText.text = "<WASD>\nor\n<arrow keys>\nto move\n\n<space> to jump";
+		}
+	}
+
+	void UnlockAbility() {
+		Debug.Log(count.ToString());
+		if (count == 8) {
+			isJumpUnlocked = true;
+			StartCoroutine(DisplayAbilityUnlockMessage("jump"));
+		}
+	}
+
+	IEnumerator DisplayAbilityUnlockMessage(string ability) {
+		if (ability == "jump") {
+			abilityUnlockText.text = "Ability unlocked!\nPress <space> to jump";
+			abilityUnlockText.enabled = true;
+			yield return new WaitForSeconds(5);
+			abilityUnlockText.enabled = false;
 		}
 	}
 
